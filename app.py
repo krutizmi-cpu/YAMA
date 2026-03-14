@@ -30,27 +30,25 @@ keyword_rules = load_keyword_rules(DATA_DIR / "keyword_rules.xlsx")
 tariffs = load_tariffs(DATA_DIR / "yandex_tariffs.xlsx")
 settings = load_settings(None)
 
-upload_col, template_col = st.columns([4, 1.7])
-with upload_col:
-    st.subheader("Загрузите Excel с товарами")
-    products_file = st.file_uploader(
-        "Файл товаров (.xlsx)",
-        type=["xlsx"],
-        accept_multiple_files=False,
-        key="products",
-        label_visibility="visible",
+st.subheader("Загрузите Excel с товарами")
+path = TEMPLATES_DIR / "products_input_template.xlsx"
+with open(path, "rb") as fh:
+    st.download_button(
+        label="📥 Скачать шаблон товаров",
+        data=fh.read(),
+        file_name="template_yandex_market_products.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=False,
     )
-with template_col:
-    st.subheader(" ")
-    path = TEMPLATES_DIR / "products_input_template.xlsx"
-    with open(path, "rb") as fh:
-        st.download_button(
-            label="Скачать шаблон товаров",
-            data=fh.read(),
-            file_name="template_yandex_market_products.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
-        )
+
+st.write("")
+products_file = st.file_uploader(
+    "Файл товаров (.xlsx)",
+    type=["xlsx"],
+    accept_multiple_files=False,
+    key="products",
+    label_visibility="visible",
+)
 
 st.subheader("Управление параметрами в системе")
 col1, col2, col3 = st.columns(3)
@@ -168,6 +166,7 @@ else:
         )
 
         st.success(f"Расчет выполнен. Позиций: {len(result_df)}")
+        st.subheader("📊 Результат расчета")
         st.dataframe(result_df, use_container_width=True, height=560)
 
         if not warnings_df.empty:
